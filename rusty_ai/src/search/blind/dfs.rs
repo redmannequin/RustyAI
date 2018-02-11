@@ -6,7 +6,6 @@ use core::node::Node;
 use core::state::State;
 use core::state::Production;
 
-
 pub fn dfs<T>(start:T, depth:usize) -> Vec<T> where T:Hash+State+Production<Item=T>  {
     
     let mut path: Vec<Node<T>> = Vec::with_capacity(depth);

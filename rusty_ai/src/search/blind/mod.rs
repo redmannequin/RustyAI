@@ -1,2 +1,3 @@
 
-mod dfs;
+pub mod dfs;
+pub mod bfs;
