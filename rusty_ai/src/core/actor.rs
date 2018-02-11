@@ -1,0 +1,6 @@
+
+
+// Actor
+pub trait Actor {
+    
+}

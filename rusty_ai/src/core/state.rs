@@ -6,7 +6,7 @@ use core::node::Node;
 pub trait State {
     fn is_goal(&self) -> bool;
     fn is_end_state(&self) -> bool;
-    fn get_score(&self) -> usize;
+    fn get_reward(&self) -> i8;
 }
 
 // Production
