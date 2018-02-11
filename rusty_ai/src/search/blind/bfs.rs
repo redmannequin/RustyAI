@@ -3,7 +3,6 @@ use std::collections::HashMap;
 use std::collections::VecDeque;
 
 use core::node::Node;
-
 use core::state::State;
 use core::state::Production;
 
@@ -26,17 +25,14 @@ pub fn bfs<T>(start:T) -> Vec<T> where T:Hash+State+Production<Item=T>  {
     let mut final_path:Vec<T> = Vec::new();
     
     while !(*parent_queue).is_empty() {
-        
         while !(*parent_queue).is_empty() {
-            count += 1;
-
-            if count%100000 == 0 {
-                println!("count: {} | visited {} | parent_queue: {} | child_queue: {} | depth {} ", 
-                            count, visited.len(), (*parent_queue).len(), (*child_queue).len(), depth);
-            }
 
             node = (*parent_queue).pop().unwrap();
             node_id = node.get_id();
+
+            if visited.contains_key(&node_id) { continue; }
+            if node.get_data().is_end_state() { continue; }
+
             if node.get_data().is_goal() { 
                 for i in 0..depth {
                     let set = node.get_parents();
@@ -48,9 +44,7 @@ pub fn bfs<T>(start:T) -> Vec<T> where T:Hash+State+Production<Item=T>  {
                 final_path.reverse();
                 break; 
             }
-            if node.get_data().is_end_state() { continue; }
-            if visited.contains_key(&node_id) { continue; }
-            
+
             for mut neighbor_node in node.production() {
                 let neighbor_id = neighbor_node.get_id();
                 if !visited.contains_key(&neighbor_id) {
@@ -58,6 +52,7 @@ pub fn bfs<T>(start:T) -> Vec<T> where T:Hash+State+Production<Item=T>  {
                     (*child_queue).push(neighbor_node);
                 }
             }
+
             visited.insert(node_id, node);
         }
         
@@ -67,6 +62,6 @@ pub fn bfs<T>(start:T) -> Vec<T> where T:Hash+State+Production<Item=T>  {
         parent_queue = temp;
         
     }
-
+    
     return final_path;
 }

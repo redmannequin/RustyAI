@@ -2,7 +2,6 @@ use std::hash::Hash;
 use std::collections::HashSet;
 
 use core::node::Node;
-
 use core::state::State;
 use core::state::Production;
 
@@ -28,14 +27,14 @@ pub fn dfs<T>(start:T, depth:usize) -> Vec<T> where T:Hash+State+Production<Item
         node = queue.pop().unwrap();
         node_id = node.get_id();
         
+        
         if visited.contains(&node_id) { continue; }
         visited.insert(node_id.clone());
-        
+        if node.get_data().is_end_state() { continue; }
+
         if node.get_data().is_goal() {
             path.push(node);
             break;
-        } else if node.get_data().is_end_state() { 
-            continue; 
         }
        
         while let Some(parent_node) = path.pop() {
