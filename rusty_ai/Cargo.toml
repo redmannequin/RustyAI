@@ -1,0 +1,6 @@
+[package]
+name = "rusty_ai"
+version = "0.1.0"
+authors = ["flavio.b <barinas.flavio@gmail.com>"]
+
+[dependencies]
