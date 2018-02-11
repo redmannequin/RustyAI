@@ -14,16 +14,13 @@ pub fn bfs<T>(start:T) -> Vec<T> where T:Hash+State+Production<Item=T>  {
 
     let mut parent_queue = Box::new(q1);
     let mut child_queue = Box::new(q2);
-
-    let mut node: Node<T> = Node::new(start);
-    (*parent_queue).push(node);
     
-    let mut count = 0;
     let mut node_id:u64;
-
     let mut depth:usize = 0;
     let mut final_path:Vec<T> = Vec::new();
+    let mut node: Node<T> = Node::new(start);
     
+    (*parent_queue).push(node);
     while !(*parent_queue).is_empty() {
         while !(*parent_queue).is_empty() {
 
@@ -62,6 +59,6 @@ pub fn bfs<T>(start:T) -> Vec<T> where T:Hash+State+Production<Item=T>  {
         parent_queue = temp;
         
     }
-    
+
     return final_path;
 }

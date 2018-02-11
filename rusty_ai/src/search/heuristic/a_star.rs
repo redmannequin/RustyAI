@@ -11,12 +11,10 @@ pub fn a_start<T>(start: T) -> Vec<T> where T:Hash+State+StateCost+Production<It
     let mut queue: BinaryHeap<Node<T>> = BinaryHeap::new();
     let mut visited: HashSet<u64> = HashSet::new();
     
-    let mut node: Node<T> = Node::new(start);
-    queue.push(node);
-
-    let mut count = 0;
     let mut node_id:u64;
+    let mut node: Node<T> = Node::new(start);
 
+    queue.push(node);
     while !queue.is_empty() {
 
         node = queue.pop().unwrap();
