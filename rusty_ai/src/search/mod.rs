@@ -17,5 +17,5 @@ pub fn get_path<T>(goal_node: Option<Node<T>>, visited: &mut HashMap<u64,Node<T>
         final_path.push(node.move_data());
         curr_node = Box::new(visited.remove(&node_id));
     }
-    return final_path;
+    return final_path.reverse();
 }
