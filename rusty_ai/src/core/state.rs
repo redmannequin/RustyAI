@@ -4,11 +4,23 @@ use std::cmp::Ordering;
 use core::node::Node;
 
 // State
-pub trait State {
-    fn is_goal(&self) -> bool;
-    fn is_end_state(&self) -> bool;
+pub enum StateType {
+    Live,
+    Dead,
+    Goal
 }
 
+pub trait State {
+    fn get_state(&self) -> StateType;
+}
+
+impl<T> State for Node<T> where T:Hash+State {
+    fn get_state(&self) -> StateType {
+        return self.get_data().get_state();
+    }
+}
+
+// Cost
 pub trait StateCost {
     fn get_reward(&self) -> i8;
     fn get_heuristic(&self) -> i8;
