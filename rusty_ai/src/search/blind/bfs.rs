@@ -6,6 +6,8 @@ use core::node::Node;
 use core::state::State;
 use core::state::Production;
 
+use search::get_path;
+
 pub fn bfs<T>(start:T) -> Vec<T> where T:Hash+State+Production<Item=T>  {
 
     let mut queue: VecDeque<Node<T>> = VecDeque::new();
@@ -37,17 +39,6 @@ pub fn bfs<T>(start:T) -> Vec<T> where T:Hash+State+Production<Item=T>  {
 
         visited.insert(node_id, node);
     }
-
-    let mut final_path:Vec<T> = Vec::new();
-    let mut curr_node: Box<Option<Node<T>>> = Box::new(goal_node);
     
-    while let Some(mut node) = *curr_node {
-        let parents = node.get_parents();
-        let mut set_iter = parents.iter(); 
-        let node_id = set_iter.next().unwrap().clone();
-        final_path.push(node.move_data());
-        curr_node = Box::new(visited.remove(&node_id));
-    }
-    
-    return final_path;
+    return get_path(goal_node, &mut visited);
 }
