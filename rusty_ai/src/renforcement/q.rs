@@ -64,6 +64,8 @@ impl QActor {
 
     fn update_QValue(&mut self, state_id: u64, action: u8, correction: f32) {
         let state_actions = self.q_table.get_mut(&state_id).unwrap();
+
+        // q_value += self.alpha * correction;
     }
 
 }
@@ -98,8 +100,8 @@ impl<T> Actor<T> for QActor where T:State+StateCost {
         let mut q_target = curr_state.get_reward() as f32;
 
         match next_state.get_state() {
-            Dead => q_target += self.get_max_QValue(curr_state_id).expected_reward,
-            Goal => q_target += self.get_max_QValue(curr_state_id).expected_reward,
+            Dead => q_target += self.gamma * self.get_max_QValue(curr_state_id).expected_reward,
+            Goal => q_target += self.gamma * self.get_max_QValue(curr_state_id).expected_reward,
         }
 
         let q_predict = q_target.clone();
