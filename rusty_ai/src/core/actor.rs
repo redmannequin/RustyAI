@@ -1,9 +1,9 @@
 
 
 // Actor
-pub trait Actor<T> {
+pub trait Actor {
     type Item;
-    fn new() -> Self::Item;
-    fn choose_action(&self) -> u8;
-    fn learn(&mut self, curr_state: T, action: u8, next_state: T);
+    fn new(alpha:f32, gamma:f32, epsilon:f32, action_space:u8) -> Self::Item;
+    fn choose_action(&self, state_id: u64) -> u8;
+    fn learn(&mut self, curr_state_id: u64, action: u8, next_state_id: u64);
 }
