@@ -63,9 +63,28 @@ impl QActor {
     }
 
     fn update_QValue(&mut self, state_id: u64, action: u8, correction: f32) {
-        let state_actions = self.q_table.get_mut(&state_id).unwrap();
+        let mut state_actions = self.q_table.get_mut(&state_id).unwrap();
+        let mut q_values = BinaryHeap::new();
+        for mut q_value in state_actions.drain() {
+            if q_value.action == action {
+                q_value.expected_reward += self.alpha * correction;
+            }
+            q_values.push(q_value);
+        }
+        
+        state_actions.append(&mut q_values);
+    }
 
-        // q_value += self.alpha * correction;
+    fn get_state_action_QValue(&self, state_id: u64, action: u8) -> Option<f32> {
+        let state_actions = self.q_table.get(&state_id).unwrap();
+        let mut result: Option<f32> = None;
+        for q_value in state_actions.iter() {
+            if q_value.action == action {
+                result = Some(q_value.expected_reward);
+                break;
+            }
+        }
+        return result;
     }
 
 }
@@ -104,7 +123,12 @@ impl<T> Actor<T> for QActor where T:State+StateCost {
             Goal => q_target += self.gamma * self.get_max_QValue(curr_state_id).expected_reward,
         }
 
-        let q_predict = q_target.clone();
+        let q_predict;
+        if let Some(q_value) = self.get_state_action_QValue(curr_state_id, action) {
+            q_predict = q_value;
+        } else {
+            panic!("QVlaue not found for state: {} and action: {}", curr_state_id, action);                        
+        }
 
         let error = q_target-q_predict;
         let correction =  self.alpha*(error);
