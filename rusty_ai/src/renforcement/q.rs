@@ -8,6 +8,7 @@ use std::collections::BinaryHeap;
 use core::actor::Actor;
 use core::state::State;
 use core::state::StateType;
+use core::state::StateCost;
 
 // QValue
 #[derive(Clone)]
@@ -67,7 +68,7 @@ impl QActor {
 
 }
 
-impl<T> Actor<T> for QActor where T:State  {
+impl<T> Actor<T> for QActor where T:State+StateCost {
     type Item = Self;
 
     fn new(alpha:f32, gamma:f32, epsilon:f32, action_space:u8) -> Self::Item {
@@ -91,9 +92,11 @@ impl<T> Actor<T> for QActor where T:State  {
         return action;
     }
     
-    fn learn(&mut self, curr_state_id: u64, action: u8, next_state: T) {
+    fn learn(&mut self, curr_state: T, action: u8, next_state: T) {
 
-        let mut q_target = 5.0;
+        let curr_state_id = curr_state.get_id();
+        let mut q_target = curr_state.get_reward() as f32;
+
         match next_state.get_state() {
             Dead => q_target += self.get_max_QValue(curr_state_id).expected_reward,
             Goal => q_target += self.get_max_QValue(curr_state_id).expected_reward,
