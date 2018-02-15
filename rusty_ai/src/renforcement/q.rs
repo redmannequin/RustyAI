@@ -87,6 +87,20 @@ impl QActor {
         return result;
     }
 
+    fn check_state(&mut self, state_id: u64) {
+        if self.q_table.contains_key(&state_id) {
+            return;
+        }
+        let mut heap =  BinaryHeap::new();
+        for i in 0..self.action_space {
+            heap.push(QValue {
+                action: i,
+                expected_reward: 0.0,
+            });
+        }
+        self.q_table.insert(state_id, heap);
+    }
+
 }
 
 impl<T> Actor<T> for QActor where T:State+StateCost {
@@ -102,7 +116,8 @@ impl<T> Actor<T> for QActor where T:State+StateCost {
         }
     }
 
-    fn choose_action(&self, state_id: u64) -> u8 {
+    fn choose_action(&mut self, state_id: u64) -> u8 {
+        self.check_state(state_id);
         let action: u8;
         if rand::random::<f32>() < self.epsilon {
             let q_value = self.get_max_QValue(state_id);
@@ -114,7 +129,7 @@ impl<T> Actor<T> for QActor where T:State+StateCost {
     }
     
     fn learn(&mut self, curr_state: T, action: u8, next_state: T) {
-
+        self.check_state(next_state.get_id());
         let curr_state_id = curr_state.get_id();
         let mut q_target = curr_state.get_reward() as f32;
 
