@@ -11,12 +11,17 @@ pub enum StateType {
 }
 
 pub trait State {
+    fn get_id(&self) -> u64;
     fn get_state(&self) -> StateType;
 }
 
 impl<T> State for Node<T> where T:Hash+State {
     fn get_state(&self) -> StateType {
         return self.get_data().get_state();
+    }
+
+    fn get_id(&self) -> u64 {
+        return self.get_id();
     }
 }
 
