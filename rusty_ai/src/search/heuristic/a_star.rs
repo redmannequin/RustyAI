@@ -57,6 +57,7 @@ fn add_neighbors<T> (
 ) where T:Clone+Hash+State+StateCost+Production<Item=T> {
     
     let node_id = node.get_id();
+    let node_score = scores.get(&node_id).unwrap().clone();
     for mut neighbor_node in node.production() {
         let neighbor_id = neighbor_node.get_id();
         neighbor_node.add_parent(node_id);
@@ -67,13 +68,13 @@ fn add_neighbors<T> (
 
         if openSet.contains_key(&neighbor_id) {
             let old_score = scores.get(&neighbor_id).unwrap().clone();
-            if score.score > old_score {
+            if score.score + node_score > old_score {
             continue;
             }
         }
 
         queue.push(score.clone());
-        scores.insert(neighbor_id, score.score);
+        scores.insert(neighbor_id, score.score + node_score);
         openSet.insert(neighbor_id, neighbor_node);
     }
 }
