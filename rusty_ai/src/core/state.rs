@@ -4,6 +4,7 @@ use std::cmp::Ordering;
 use core::node::Node;
 
 // State
+#[derive(Clone)]
 pub enum StateType {
     Live,
     Dead,
@@ -27,16 +28,16 @@ impl<T> State for Node<T> where T:Hash+State {
 
 // Cost
 pub trait StateCost {
-    fn get_reward(&self) -> i8;
-    fn get_heuristic(&self) -> i8;
+    fn get_score(&self) -> f32;
+    fn get_heuristic(&self) -> f32;
 }
 
 impl<T> StateCost for Node<T> where T:Hash+StateCost {
-    fn get_reward(&self) -> i8 {
-        return self.get_data().get_reward();
+    fn get_score(&self) -> f32 {
+        return self.get_data().get_score();
     }
 
-    fn get_heuristic(&self) -> i8 {
+    fn get_heuristic(&self) -> f32 {
         return self.get_data().get_heuristic();
     }
 }
@@ -58,28 +59,3 @@ impl<T> Production for Node<T> where T:Hash+Production<Item=T> {
         return nodes;
     }
 }
-
-//
-impl<T> PartialOrd for Node<T> where T:Hash+StateCost {
-    fn partial_cmp(&self, other: &Node<T>) -> Option<Ordering> {
-        Some(self.cmp(other))
-    }
-}
-
-impl<T> Ord for Node<T> where T:Hash+StateCost {
-    fn cmp(&self, other: &Node<T>) -> Ordering {
-        let x = self.get_reward() + self.get_heuristic();
-        let y = other.get_reward() + other.get_heuristic();
-        return x.cmp(&y);
-    }
-}
-
-impl<T> PartialEq for Node<T> where T:Hash+StateCost {
-    fn eq(&self, other: &Node<T>) -> bool {
-        let x = self.get_reward() + self.get_heuristic();
-        let y = other.get_reward() + other.get_heuristic();
-        return x == y;
-    }
-}
-
-impl<T> Eq for Node<T> where T:Hash+StateCost {}

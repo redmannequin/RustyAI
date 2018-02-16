@@ -131,7 +131,7 @@ impl<T> Actor<T> for QActor where T:State+StateCost {
     fn learn(&mut self, curr_state: T, action: u8, next_state: T) {
         self.check_state(next_state.get_id());
         let curr_state_id = curr_state.get_id();
-        let mut q_target = curr_state.get_reward() as f32;
+        let mut q_target = curr_state.get_score() as f32;
 
         match next_state.get_state() {
             Dead => q_target += self.gamma * self.get_max_QValue(curr_state_id).expected_reward,

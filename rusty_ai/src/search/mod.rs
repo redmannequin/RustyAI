@@ -13,9 +13,12 @@ pub fn get_path<T>(goal_node: Option<Node<T>>, visited: &mut HashMap<u64,Node<T>
     while let Some(mut node) = *curr_node {
         let parents = node.get_parents();
         let mut set_iter = parents.iter(); 
-        let node_id = set_iter.next().unwrap().clone();
-        final_path.push(node.move_data());
-        curr_node = Box::new(visited.remove(&node_id));
+        if let Some(node_id) = set_iter.next() {
+            final_path.push(node.move_data());
+            curr_node = Box::new(visited.remove(&node_id));
+        } else {
+            break;
+        }
     }
     final_path.reverse();
     return final_path;
