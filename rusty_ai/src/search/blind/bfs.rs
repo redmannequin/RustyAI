@@ -19,6 +19,10 @@ pub fn bfs<T>(start:T) -> Vec<T> where T:Hash+State+Production<Item=T>  {
     
     while let Some(mut node) = queue.pop_front() {
         
+        //if visited.len()%100 == 0 {
+        //    println!("queue: {} | visited: {} ", queue.len(), visited.len());
+        //}
+
         let node_id = node.get_id();
         if visited.contains_key(&node_id) { continue; }
 

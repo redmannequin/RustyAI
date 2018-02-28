@@ -31,18 +31,23 @@ pub fn a_star<T>(start: T) -> Vec<T> where T:Clone+Hash+State+StateCost+Producti
     
     while let Some(score) = queue.pop() {
         let node_id = score.id;
-        let node = openSet.remove(&node_id).unwrap();
 
-        match node.get_state() {
-            StateType::Live => {
-                closedSet.insert(node_id, node.clone());
-                add_neighbors(&mut queue, &mut scores, &mut openSet, &closedSet, node);  
-            },
-            StateType::Goal => {
-                goal_node = Some(node);
-                break; 
-            },
-            StateType::Dead => continue,
+        if scores.len()%100 == 0 {
+            println!("openset: {} | Q: {} | closeset: {} | visited: {} | D: {}", openSet.len(), queue.len(), closedSet.len(), scores.len(), score.score);
+        }
+        
+        if let Some(node) = openSet.remove(&node_id) {
+            match node.get_state() {
+                StateType::Live => {
+                    closedSet.insert(node_id, node.clone());
+                    add_neighbors(&mut queue, &mut scores, &mut openSet, &closedSet, node);  
+                },
+                StateType::Goal => {
+                    goal_node = Some(node);
+                    break; 
+                },
+                StateType::Dead => continue,
+            }
         }
     }
     return get_path(goal_node, &mut closedSet);
@@ -69,7 +74,7 @@ fn add_neighbors<T> (
         if openSet.contains_key(&neighbor_id) {
             let old_score = scores.get(&neighbor_id).unwrap().clone();
             if score.score + node_score > old_score {
-            continue;
+                continue;
             }
         }
 
