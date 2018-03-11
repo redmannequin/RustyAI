@@ -1,6 +1,4 @@
 use std::hash::Hash;
-use std::cmp::Ordering;
-
 use core::node::Node;
 
 // State

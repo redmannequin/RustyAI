@@ -5,7 +5,6 @@ use std::collections::hash_map::DefaultHasher;
 // Node
 #[derive(Clone)]
 pub struct Node<T> where T:Hash {
-    id: u64,
     data: T,
     parents: BTreeSet<u64>,
     children: BTreeSet<u64>
@@ -15,14 +14,7 @@ impl<T> Node<T> where T:Hash {
 
     // create and reutrn new Node
     pub fn new(data: T) -> Self {
-
-        let mut hasher = DefaultHasher::new();
-        data.hash(&mut hasher);
-
-        let id:u64 = hasher.finish();
-
         return Node {
-            id: id,
             data: data,
             parents: BTreeSet::new(),
             children: BTreeSet::new(),
@@ -85,13 +77,16 @@ impl<T> Node<T> where T:Hash {
     }
 
     pub fn get_id(&self) -> u64 {
-        return self.id;
+        let mut hasher = DefaultHasher::new();
+        self.data.hash(&mut hasher);
+        let id:u64 = hasher.finish();
+        return id;
     }
 }
 
 // Hash
 impl<T> Hash for Node<T> where T:Hash {
     fn hash<H: Hasher>(&self, state: &mut H) {
-        self.id.hash(state);
+        self.data.hash(state);
     }
 }
