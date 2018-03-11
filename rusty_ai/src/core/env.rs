@@ -9,5 +9,5 @@ pub trait Env<T> where T:State {
     fn get_action_space(&self) -> u8;
     fn get_observation_space(&self) -> u8;
     fn get_reward_range(&self) -> i8;
-    fn reset(&self);
+    fn reset(&mut self);
 }
