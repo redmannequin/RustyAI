@@ -3,7 +3,7 @@ use core::state::State;
 use core::state::Production;
 
 // Evn
-pub trait Env<T> where T:State+Production<Item=T>  {
+pub trait Env<T> where T:State {
     type Action;
     fn step(&mut self, action: Self::Action) -> T;
     fn get_action_space(&self) -> u8;
