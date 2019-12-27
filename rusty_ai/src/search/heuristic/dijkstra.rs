@@ -7,16 +7,15 @@ use std::rc::Rc;
 use crate::traits::Search;
 use crate::traits::State;
 use crate::traits::Neighbors;
-use crate::traits::Cost;
 use crate::traits::Distance;
 
-/// A* Struct
-pub struct AStar;
- 
-/// A* Search
-impl<T> Search<T> for AStar
-where T: Eq + State + Neighbors + Distance + Cost + Clone {
+/// Dijkstra Struct
+pub struct Dijkstra;
 
+/// Dijkstra Search
+/// 
+impl<T> Search<T> for Dijkstra
+where T: Eq + State + Neighbors + Distance + Clone {
     fn search(start: T, goal: T) -> Option<Vec<T>> {
         let goal_id = goal.get_id();
         let mut queue: BinaryHeap<Rc<Node<T>>> = BinaryHeap::new();
@@ -27,8 +26,7 @@ where T: Eq + State + Neighbors + Distance + Cost + Clone {
         queue.push(node);
 
         let mut found = false;
-        
-        // get next node
+
         while let Some(node) = queue.pop() {
             let node_id = node.get_id();
             if node_id == goal_id { 
@@ -39,7 +37,7 @@ where T: Eq + State + Neighbors + Distance + Cost + Clone {
             for neighbor in node.get_neighbors() {
                 let neighbor = Rc::new(neighbor);
                 if let Some(old_node) = scores.get(&neighbor.get_id()) {
-                    if old_node.score <= neighbor.score { continue; }
+                    if old_node.dist <= neighbor.dist { continue; }
                 } 
                 scores.insert(neighbor.get_id(), neighbor.clone());
                 queue.push(neighbor);
@@ -63,7 +61,6 @@ where T: Eq + State + Neighbors + Distance + Cost + Clone {
     }
 }
 
-
 /// A* Node
 /// 
 /// 
@@ -71,14 +68,12 @@ where T: Eq + State + Neighbors + Distance + Cost + Clone {
 struct Node<T> where T: State + Clone {
     data: T,
     parent: Option<T::Id>,
-    dist: f64,
-    score: f64,
+    dist: f64
 }
 
-impl<T> Node<T> where T: State + Cost + Clone {
+impl<T> Node<T> where T: State + Clone {
     fn new(data: T, parent: Option<T::Id>, dist: f64) -> Self {
-        let score = data.get_cost() + dist;
-        Self { data, parent, dist, score }
+        Self { data, parent, dist }
     }
 }
 
@@ -91,7 +86,7 @@ impl<T> State for Node<T> where T: State + Clone {
 
 }
 
-impl<T> Neighbors for Node<T> where T: State + Neighbors + Cost + Distance + Clone {
+impl<T> Neighbors for Node<T> where T: State + Neighbors + Distance + Clone {
     fn get_neighbors(&self) -> Vec<Self> {
         let mut neighbors = Vec::new();
         for neighbor in self.data.get_neighbors() {
@@ -102,11 +97,11 @@ impl<T> Neighbors for Node<T> where T: State + Neighbors + Cost + Distance + Clo
     }
 }
 
-impl<T> Ord for Node<T> where T: State + Cost + Clone {
+impl<T> Ord for Node<T> where T: State + Clone {
     fn cmp(&self, other: &Self) -> Ordering {
-        if self.score == other.score {
+        if self.dist == other.dist {
             Ordering::Equal
-        } else if self.score < other.score {
+        } else if self.dist < other.dist {
             Ordering::Greater
         } else {
             Ordering::Less
@@ -114,22 +109,22 @@ impl<T> Ord for Node<T> where T: State + Cost + Clone {
     }
 }
 
-impl<T> PartialOrd for Node<T> where T: State + Cost + Clone {
+impl<T> PartialOrd for Node<T> where T: State + Clone {
     fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
         Some(self.cmp(other))
     }
 }
 
-impl<T> PartialEq for Node<T> where T: State + Cost + Clone {
+impl<T> PartialEq for Node<T> where T: State + Clone {
     fn eq(&self, other: &Self) -> bool {
-        self.score == other.score
+        self.dist == other.dist
     }
 }
 
-impl<T> Eq for Node<T> where T: Cost + Clone {}
+impl<T> Eq for Node<T> where T: State + Clone {}
 
 #[test]
-fn astar_test_00() {
+fn dijkstra_test_00() {
 
     #[derive(Debug,PartialEq,Eq,Clone)]
     struct Test(u16);
@@ -150,13 +145,6 @@ fn astar_test_00() {
         }
     }
 
-    impl Cost for Test {
-        fn get_cost(&self) -> f64 {
-            let x: f64 = self.0.into();
-            20.0 - x
-        }
-    }
-
     impl Neighbors for Test {
         fn get_neighbors(&self) -> Vec<Self> {
             let mut a = Vec::with_capacity(4);
@@ -168,7 +156,7 @@ fn astar_test_00() {
         }
     }
 
-    println!("{:?}", AStar::search(Test(1), Test(20)));
+    println!("{:?}", Dijkstra::search(Test(1), Test(20)));
 
     assert!(true);
 }

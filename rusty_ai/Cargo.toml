@@ -1,7 +1,8 @@
 [package]
 name = "rusty_ai"
 version = "0.1.0"
-authors = ["flavio.b <barinas.flavio@gmail.com>"]
+authors = ["Flavio B. <barinas.flavio@gmail.com>"]
+edition = "2018"
 
 [dependencies]
-rand = "0.4.2"
+rand = "0.7.2"
